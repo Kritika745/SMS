@@ -14,10 +14,36 @@ export const useSalesData = (filters) => {
     try {
       setLoading(true)
       setError(null)
+
       const result = await fetchSales(filters)
-      setData(result.data || [])
-      setStats(result.stats || {})
-      setPagination(result.pagination || {})
+      
+      // --- CRITICAL: THE ADAPTER PATTERN ---
+      // We map the "Messy" DB keys (with spaces) to "Clean" Frontend keys (camelCase)
+      const adaptedData = (result.data || []).map((item) => ({
+        // Map Keys
+        transactionId: item["Transaction ID"],
+        date: item["Date"],
+        customerId: item["Customer ID"],
+        customerName: item["Customer Name"],
+        phoneNumber: item["Phone Number"],
+        gender: item["Gender"],
+        age: item["Age"],
+        customerRegion: item["Customer Region"],
+        productCategory: item["Product Category"],
+        productName: item["Product Name"],
+        brand: item["Brand"],
+        quantity: item["Quantity"],
+        pricePerUnit: item["Price per Unit"],
+        finalAmount: item["Final Amount"],
+        paymentMethod: item["Payment Method"],
+        
+        // Keep the original item just in case you need a field we didn't map
+        ...item, 
+      }))
+
+      setData(adaptedData)
+      setStats(result.stats || { totalUnitsSold: 0, totalAmount: 0, totalDiscount: 0 })
+      setPagination(result.pagination || { current: 1, limit: 10, total: 0, pages: 0 })
     } catch (err) {
       setError(err.message)
       console.error("Error fetching sales:", err)

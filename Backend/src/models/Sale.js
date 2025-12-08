@@ -2,88 +2,38 @@ import mongoose from "mongoose"
 
 const saleSchema = new mongoose.Schema(
   {
-    // Customer Fields
-    customerId: {
-      type: String,
-      required: true,
-      index: true,
-    },
-    customerName: {
-      type: String,
-      required: true,
-      index: true,
-    },
-    phoneNumber: {
-      type: String,
-      required: true,
-      index: true,
-    },
-    gender: {
-      type: String,
-      enum: ["Male", "Female", "Other"],
-      required: true,
-      index: true,
-    },
-    age: {
-      type: Number,
-      required: true,
-      index: true,
-    },
-    customerRegion: {
-      type: String,
-      required: true,
-      index: true,
-    },
-    customerType: String,
-
-    // Product Fields
-    productId: String,
-    productName: String,
-    brand: String,
-    productCategory: {
-      type: String,
-      required: true,
-      index: true,
-    },
-    tags: [String],
-
-    // Sales Fields
-    quantity: {
-      type: Number,
-      required: true,
-    },
-    pricePerUnit: Number,
-    discountPercentage: Number,
-    totalAmount: Number,
-    finalAmount: Number,
-
-    // Operational Fields
-    date: {
-      type: Date,
-      required: true,
-      index: true,
-    },
-    paymentMethod: {
-      type: String,
-      required: true,
-      index: true,
-    },
-    orderStatus: String,
-    deliveryType: String,
-    storeId: String,
-    storeLocation: String,
-    salespersonId: String,
-    employeeName: String,
-
-    // Transaction ID for reference
-    transactionId: {
-      type: String,
-      unique: true,
-      required: true,
-      index: true,
-    },
+    // We use quote marks because the keys have spaces
+    "Transaction ID": { type: String, index: true },
+    "Date": { type: String, index: true }, // Stored as String YYYY-MM-DD
+    "Customer ID": String,
+    "Customer Name": { type: String, index: true },
+    "Phone Number": String,
+    "Gender": String,
+    "Age": String, // Stored as String
+    "Customer Region": String,
+    "Customer Type": String,
+    "Product ID": String,
+    "Product Name": String,
+    "Brand": String,
+    "Product Category": String,
+    "Tags": String, // The screenshot shows this might be a single string "organic,skincare"
+    "Quantity": String,
+    "Price per Unit": String,
+    "Discount Percentage": String,
+    "Total Amount": String,
+    "Final Amount": String,
+    "Payment Method": String,
+    "Order Status": String,
+    "Delivery Type": String,
+    "Store ID": String,
+    "Store Location": String,
+    "Salesperson ID": String,
+    "Employee Name": String,
   },
-  { timestamps: true },
+  { 
+    timestamps: true, // This adds createdAt/updatedAt, which you might not have in the raw data
+    strict: false // IMPORTANT: This allows fields not in schema to still return
+  }
 )
 
 export default mongoose.model("Sale", saleSchema)

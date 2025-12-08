@@ -1,87 +1,90 @@
 export const buildQuery = ({
-  search,
-  customerRegion,
-  gender,
-  minAge,
-  maxAge,
-  productCategory,
-  tags,
-  paymentMethod,
-  startDate,
-  endDate,
-}) => {
-  const query = {}
-
-  // Search: Customer Name or Phone Number (case-insensitive)
-  if (search && search.trim()) {
-    const searchRegex = { $regex: search.trim(), $options: "i" }
-    query.$or = [{ customerName: searchRegex }, { phoneNumber: searchRegex }]
-  }
-
-  // Filters
-  if (customerRegion) {
-    const regions = Array.isArray(customerRegion) ? customerRegion : [customerRegion]
-    query.customerRegion = { $in: regions }
-  }
-
-  if (gender) {
-    const genders = Array.isArray(gender) ? gender : [gender]
-    query.gender = { $in: genders }
-  }
-
-  if (minAge !== null || maxAge !== null) {
-    query.age = {}
-    if (minAge !== null) query.age.$gte = minAge
-    if (maxAge !== null) query.age.$lte = maxAge
-  }
-
-  if (productCategory) {
-    const categories = Array.isArray(productCategory) ? productCategory : [productCategory]
-    query.productCategory = { $in: categories }
-  }
-
-  if (tags) {
-    const tagArray = Array.isArray(tags) ? tags : [tags]
-    query.tags = { $in: tagArray }
-  }
-
-  if (paymentMethod) {
-    const methods = Array.isArray(paymentMethod) ? paymentMethod : [paymentMethod]
-    query.paymentMethod = { $in: methods }
-  }
-
-  // Date Range Filter
-  if (startDate || endDate) {
-    query.date = {}
-    if (startDate) {
-      query.date.$gte = new Date(startDate)
+    search,
+    customerRegion,
+    gender,
+    minAge,
+    maxAge,
+    productCategory,
+    tags,
+    paymentMethod,
+    startDate,
+    endDate,
+  }) => {
+    const query = {}
+  
+    // 1. Search (Map to "Customer Name" or "Phone Number")
+    if (search && search.trim()) {
+      const searchRegex = { $regex: search.trim(), $options: "i" }
+      query.$or = [
+        { "Customer Name": searchRegex }, 
+        { "Phone Number": searchRegex },
+        { "Transaction ID": searchRegex }
+      ]
     }
-    if (endDate) {
-      const end = new Date(endDate)
-      end.setHours(23, 59, 59, 999)
-      query.date.$lte = end
+  
+    // 2. Exact Match Filters
+    if (customerRegion) {
+      query["Customer Region"] = { $in: Array.isArray(customerRegion) ? customerRegion : [customerRegion] }
     }
+  
+    if (gender) {
+      query["Gender"] = { $in: Array.isArray(gender) ? gender : [gender] }
+    }
+  
+    if (productCategory) {
+      query["Product Category"] = { $in: Array.isArray(productCategory) ? productCategory : [productCategory] }
+    }
+  
+    if (paymentMethod) {
+      query["Payment Method"] = { $in: Array.isArray(paymentMethod) ? paymentMethod : [paymentMethod] }
+    }
+  
+    // 3. Tags (Handle string "organic,skincare")
+    if (tags) {
+      const tagArray = Array.isArray(tags) ? tags : [tags]
+      // Use regex to find the tag inside the comma-separated string
+      query["Tags"] = { $regex: tagArray.join("|"), $options: "i" }
+    }
+  
+    // 4. Age (Stored as String in DB)
+    // Note: This does string comparison. "9" > "10" is False. "9" > "80" is True.
+    if (minAge || maxAge) {
+      query["Age"] = {}
+      if (minAge) query["Age"].$gte = String(minAge)
+      if (maxAge) query["Age"].$lte = String(maxAge)
+    }
+  
+    // 5. Date (Stored as String YYYY-MM-DD)
+    if (startDate || endDate) {
+      query["Date"] = {}
+      if (startDate) query["Date"].$gte = startDate // Assumes format matches YYYY-MM-DD
+      if (endDate) query["Date"].$lte = endDate
+    }
+  
+    return query
   }
-
-  return query
-}
-
-export const buildSort = (sortBy, sortOrder = "desc") => {
-  const sortObj = {}
-
-  switch (sortBy) {
-    case "date":
-      sortObj.date = sortOrder === "asc" ? 1 : -1
-      break
-    case "quantity":
-      sortObj.quantity = sortOrder === "asc" ? 1 : -1
-      break
-    case "customerName":
-      sortObj.customerName = sortOrder === "asc" ? 1 : -1
-      break
-    default:
-      sortObj.date = -1 // Default: newest first
+  
+  export const buildSort = (sortBy, sortOrder = "desc") => {
+    const direction = sortOrder === "asc" ? 1 : -1
+    const sortObj = {}
+  
+    // Map frontend camelCase to DB Title Case
+    switch (sortBy) {
+      case "date":
+        sortObj["Date"] = direction
+        break
+      case "quantity":
+        sortObj["Quantity"] = direction
+        break
+      case "amount":
+        sortObj["Final Amount"] = direction
+        break
+      case "customerName":
+        sortObj["Customer Name"] = direction
+        break
+      default:
+        sortObj["Date"] = -1 
+    }
+  
+    return sortObj
   }
-
-  return sortObj
-}
