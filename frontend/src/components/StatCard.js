@@ -1,11 +1,11 @@
 "use client"
 
-export default function StatCard({ label, value, icon }) {
+export default function StatCard({ label, value }) {
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-4 flex-1">
+    <div className="bg-white rounded-lg border border-gray-200 p-4">
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-xs text-gray-600 font-medium">{label}</p>
+          <p className="text-xs font-medium text-gray-600">{label}</p>
           <p className="text-2xl font-bold text-gray-900 mt-2">
             {typeof value === "number" ? value.toLocaleString() : value}
           </p>

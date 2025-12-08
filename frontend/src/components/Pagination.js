@@ -30,7 +30,7 @@ export default function Pagination({ current, pages, onPageChange }) {
   const pageNumbers = getPageNumbers()
 
   return (
-    <div className="flex items-center justify-center gap-2 mt-6">
+    <div className="flex items-center justify-center gap-2">
       <button
         onClick={() => onPageChange(Math.max(1, current - 1))}
         disabled={current === 1}

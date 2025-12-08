@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useMemo, useEffect } from "react"
-// import Sidebar from "@/components/Sidebar" // Uncomment if you have this
 import SearchBar from "@/components/SearchBar"
 import FilterDropdown from "@/components/FilterDropdown"
 import StatCard from "@/components/StatCard"
@@ -12,7 +11,7 @@ import { useSalesData, useFilterOptions } from "@/hooks/useSalesData"
 export default function Dashboard() {
   const [search, setSearch] = useState("")
   const [debouncedSearch, setDebouncedSearch] = useState("")
-  
+
   const [selectedFilters, setSelectedFilters] = useState({
     customerRegion: [],
     gender: [],
@@ -30,7 +29,6 @@ export default function Dashboard() {
 
   const { options } = useFilterOptions()
 
-  // Debounce search
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(search)
@@ -49,14 +47,12 @@ export default function Dashboard() {
 
     if (debouncedSearch) params.search = debouncedSearch
 
-    // Add arrays only if populated
     if (selectedFilters.customerRegion.length) params.customerRegion = selectedFilters.customerRegion
     if (selectedFilters.gender.length) params.gender = selectedFilters.gender
     if (selectedFilters.productCategory.length) params.productCategory = selectedFilters.productCategory
     if (selectedFilters.tags.length) params.tags = selectedFilters.tags
     if (selectedFilters.paymentMethod.length) params.paymentMethod = selectedFilters.paymentMethod
 
-    // Add ranges/dates
     if (selectedFilters.minAge) params.minAge = selectedFilters.minAge
     if (selectedFilters.maxAge) params.maxAge = selectedFilters.maxAge
     if (selectedFilters.startDate) params.startDate = selectedFilters.startDate
@@ -93,21 +89,20 @@ export default function Dashboard() {
     setCurrentPage(1)
   }
 
-  // Sort Logic
   const handleSortChange = (value) => {
     if (value === "quantity") {
-        setSortBy("quantity")
-        setSortOrder("desc")
+      setSortBy("quantity")
+      setSortOrder("desc")
     } else if (value === "amount") {
-        setSortBy("amount")
-        setSortOrder("desc")
+      setSortBy("amount")
+      setSortOrder("desc")
     } else if (value === "customerName") {
-        setSortBy("customerName")
-        setSortOrder("asc")
+      setSortBy("customerName")
+      setSortOrder("asc")
     } else {
-        const [field, order] = value.split("-")
-        setSortBy(field)
-        setSortOrder(order)
+      const [field, order] = value.split("-")
+      setSortBy(field)
+      setSortOrder(order)
     }
     setCurrentPage(1)
   }
@@ -131,129 +126,137 @@ export default function Dashboard() {
     setCurrentPage(1)
   }
 
-  // Helper for select value
   const getCurrentSortValue = () => {
-      if (sortBy === "quantity") return "quantity"
-      if (sortBy === "amount") return "amount"
-      if (sortBy === "customerName") return "customerName"
-      return `${sortBy}-${sortOrder}`
+    if (sortBy === "quantity") return "quantity"
+    if (sortBy === "amount") return "amount"
+    if (sortBy === "customerName") return "customerName"
+    return `${sortBy}-${sortOrder}`
   }
 
   return (
-    <div className="flex">
-      {/* <Sidebar /> */}
-      <main className="flex-1 min-h-screen bg-gray-50 p-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Sales Dashboard</h1>
-          <p className="text-gray-500 mt-1">Manage and analyze your sales data</p>
+    <div className="w-full">
+      {/* Header Section */}
+      <div className="bg-white border-b border-gray-200">
+        <div className="px-8 py-6 flex items-center justify-between">
+          <h1 className="text-xl font-semibold text-gray-900">Sales Management System</h1>
+          <div className="w-80">
+            <SearchBar search={search} onSearchChange={setSearch} />
+          </div>
         </div>
+      </div>
 
-        {/* Filter Bar */}
-        <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm mb-6">
-            <div className="flex flex-wrap gap-4 items-center">
-                <div className="w-full md:w-64">
-                    <SearchBar search={search} onSearchChange={setSearch} />
-                </div>
-                
-                <div className="h-8 w-px bg-gray-200 hidden md:block"></div>
+      {/* Main Content */}
+      <main className="bg-gray-50 min-h-screen">
+        {/* Filter Section */}
+        <div className="px-8 py-6">
+          <div className="bg-white rounded-lg border border-gray-200 p-4">
+            <div className="flex flex-wrap gap-3 items-center">
+              {/* Reset Button with Icon */}
+              <button
+                onClick={handleClearFilters}
+                className="flex items-center gap-2 px-3 py-2 text-gray-600 hover:text-gray-800 text-sm"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                  />
+                </svg>
+              </button>
 
-                <div className="flex flex-wrap gap-2 flex-1">
-                    <FilterDropdown
-                        label="Region"
-                        options={options?.regions || []}
-                        selected={selectedFilters.customerRegion}
-                        onSelect={(v) => handleFilterChange("customerRegion", v)}
-                        multi={true}
-                    />
-                    <FilterDropdown
-                        label="Category"
-                        options={options?.productCategories || []}
-                        selected={selectedFilters.productCategory}
-                        onSelect={(v) => handleFilterChange("productCategory", v)}
-                        multi={true}
-                    />
-                    <FilterDropdown
-                        label="Payment"
-                        options={options?.paymentMethods || []}
-                        selected={selectedFilters.paymentMethod}
-                        onSelect={(v) => handleFilterChange("paymentMethod", v)}
-                        multi={true}
-                    />
-                     <FilterDropdown
-                        label="Gender"
-                        options={options?.genders || []}
-                        selected={selectedFilters.gender}
-                        onSelect={(v) => handleFilterChange("gender", v)}
-                        multi={true}
-                    />
-                </div>
+              {/* Filter Dropdowns */}
+              <FilterDropdown
+                label="Customer Region"
+                options={options?.regions || []}
+                selected={selectedFilters.customerRegion}
+                onSelect={(v) => handleFilterChange("customerRegion", v)}
+                multi={true}
+              />
+              <FilterDropdown
+                label="Gender"
+                options={options?.genders || []}
+                selected={selectedFilters.gender}
+                onSelect={(v) => handleFilterChange("gender", v)}
+                multi={true}
+              />
+              <FilterDropdown
+                label="Age Range"
+                isRange={true}
+                minValue={selectedFilters.minAge}
+                maxValue={selectedFilters.maxAge}
+                onRangeChange={handleRangeChange}
+              />
+              <FilterDropdown
+                label="Product Category"
+                options={options?.productCategories || []}
+                selected={selectedFilters.productCategory}
+                onSelect={(v) => handleFilterChange("productCategory", v)}
+                multi={true}
+              />
+              <FilterDropdown
+                label="Tags"
+                options={options?.tags || []}
+                selected={selectedFilters.tags}
+                onSelect={(v) => handleFilterChange("tags", v)}
+                multi={true}
+              />
+              <FilterDropdown
+                label="Payment Method"
+                options={options?.paymentMethods || []}
+                selected={selectedFilters.paymentMethod}
+                onSelect={(v) => handleFilterChange("paymentMethod", v)}
+                multi={true}
+              />
+              <FilterDropdown
+                label="Date"
+                options={["All", "Today", "This Week", "This Month"]}
+                selected={selectedFilters.startDate}
+                onSelect={(v) => handleDateRangeChange("startDate", v)}
+                multi={false}
+              />
 
-                 <select
-                    value={getCurrentSortValue()}
-                    onChange={(e) => handleSortChange(e.target.value)}
-                    className="px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                    <option value="date-desc">Newest First</option>
-                    <option value="date-asc">Oldest First</option>
-                    <option value="quantity">Highest Quantity</option>
-                    <option value="amount">Highest Amount</option>
-                    <option value="customerName">Customer (A-Z)</option>
-                </select>
+              <div className="flex-1"></div>
 
-                <button
-                    onClick={handleClearFilters}
-                    className="text-sm text-red-600 hover:text-red-800 font-medium px-3 py-2"
-                >
-                    Reset
-                </button>
+              {/* Sort Dropdown */}
+              <select
+                value={getCurrentSortValue()}
+                onChange={(e) => handleSortChange(e.target.value)}
+                className="px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 whitespace-nowrap"
+              >
+                <option value="date-desc">Sort by: Customer Name (A-Z)</option>
+                <option value="date-asc">Oldest First</option>
+                <option value="quantity">Highest Quantity</option>
+                <option value="amount">Highest Amount</option>
+                <option value="customerName">Customer (A-Z)</option>
+              </select>
             </div>
-            
-            {/* Secondary Row for Dates/Age */}
-            <div className="mt-4 pt-4 border-t border-gray-100 flex flex-wrap gap-4 items-center text-sm">
-                 <div className="flex items-center gap-2">
-                    <span className="text-gray-500">Date Range:</span>
-                    <input
-                        type="date"
-                        value={selectedFilters.startDate}
-                        onChange={(e) => handleDateRangeChange("startDate", e.target.value)}
-                        className="px-3 py-1.5 border border-gray-300 rounded-md"
-                    />
-                    <span className="text-gray-400">to</span>
-                    <input
-                        type="date"
-                        value={selectedFilters.endDate}
-                        onChange={(e) => handleDateRangeChange("endDate", e.target.value)}
-                        className="px-3 py-1.5 border border-gray-300 rounded-md"
-                    />
-                 </div>
-                 
-                 {/* Re-add Age Range if needed via FilterDropdown logic */}
-            </div>
+          </div>
         </div>
 
-        {error && <div className="mb-6 p-4 bg-red-50 text-red-700 rounded-lg border border-red-200">{error}</div>}
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <StatCard label="Total Units Sold" value={stats.totalUnitsSold} icon="📦" />
-          <StatCard
-            label="Total Revenue"
-            value={`₹${(stats.totalAmount || 0).toLocaleString()}`}
-            icon="💰"
-          />
-          <StatCard
-            label="Total Discounts"
-            value={`₹${(stats.totalDiscount || 0).toLocaleString()}`}
-            icon="🏷️"
-          />
+        {/* Stats Cards Section */}
+        <div className="px-8">
+          <div className="grid grid-cols-3 gap-4 mb-8">
+            <StatCard label="Total units sold" value={stats.totalUnitsSold} />
+            <StatCard label="Total Amount" value={`₹${(stats.totalAmount || 0).toLocaleString()} (19 SRs)`} />
+            <StatCard label="Total Discount" value={`₹${(stats.totalDiscount || 0).toLocaleString()} (45 SRs)`} />
+          </div>
         </div>
 
-        <SalesTable data={data} loading={loading} />
+        {error && <div className="mx-8 mb-6 p-4 bg-red-50 text-red-700 rounded-lg border border-red-200">{error}</div>}
 
-        <div className="mt-6">
-            {pagination.pages > 1 && (
+        {/* Sales Table Section */}
+        <div className="px-8 pb-8">
+          <SalesTable data={data} loading={loading} />
+        </div>
+
+        {/* Pagination Section */}
+        {pagination.pages > 1 && (
+          <div className="px-8 pb-8">
             <Pagination current={pagination.current} pages={pagination.pages} onPageChange={setCurrentPage} />
-            )}
-        </div>
+          </div>
+        )}
       </main>
     </div>
   )
