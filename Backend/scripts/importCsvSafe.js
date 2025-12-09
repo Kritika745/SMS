@@ -1,7 +1,7 @@
 import csv from "csvtojson";
 import { MongoClient } from "mongodb";
 
-const uri = "mongodb+srv://kritika123:egDCF2tkYhTNAl2U@cluster0.q85zd8e.mongodb.net/salesDB?appName=Cluster0";
+const uri = process.env.MONGO_URI;
 const dbName = "salesDB";
 const collectionName = "sales";
 const csvFilePath = "./truestate_assignment_dataset.csv";
