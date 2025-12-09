@@ -120,10 +120,6 @@ This will start the Next.js development server, typically on port 3000.  Open yo
 ├── README.md
 ```
 
-## 📸 Screenshots
-
-(Add screenshots of the application here to showcase its features and UI.)
-
 ## 🤝 Contributing
 
 Contributions are welcome! Please follow these steps:
@@ -133,15 +129,3 @@ Contributions are welcome! Please follow these steps:
 3.  Make your changes and commit them with descriptive messages.
 4.  Push your changes to your fork.
 5.  Submit a pull request to the main repository.
-
-## 📝 License
-
-This project is licensed under the [MIT License](LICENSE).
-
-## 📬 Contact
-
-If you have any questions or suggestions, feel free to contact me at [your-email@example.com](mailto:your-email@example.com).
-
-## 💖 Thanks Message
-
-Thank you for checking out this project! I hope it's helpful for visualizing and analyzing sales data. Your feedback and contributions are highly appreciated.
